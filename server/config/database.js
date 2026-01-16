@@ -1,39 +1,31 @@
 const { Sequelize } = require("sequelize");
-require("dotenv").config();
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME || "ai_learning",
-  process.env.DB_USER || "root",
-  process.env.DB_PASSWORD || "",
+  process.env.DB_NAME,        // MYSQLDATABASE
+  process.env.DB_USER,        // MYSQLUSER
+  process.env.DB_PASSWORD,    // MYSQLPASSWORD
   {
-    host: process.env.DB_HOST || "127.0.0.1",
-    port: process.env.DB_PORT || 3306,
+    host: process.env.DB_HOST, // MYSQLHOST
+    port: process.env.DB_PORT, // MYSQLPORT
     dialect: "mysql",
-    logging: process.env.DB_LOGGING === "true" ? console.log : false,
+    logging: false,
     pool: {
-      max: process.env.DB_POOL_MAX || 5,
-      min: process.env.DB_POOL_MIN || 0,
-      acquire: process.env.DB_POOL_ACQUIRE || 30000,
-      idle: process.env.DB_POOL_IDLE || 10000,
-    },
-    define: {
-      timestamps: true,
-      underscored: true,
-      createdAt: "created_at",
-      updatedAt: "updated_at",
-    },
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
   }
 );
 
-const testConnection = async () => {
+// Test connection (VERY IMPORTANT for Railway logs)
+(async () => {
   try {
     await sequelize.authenticate();
-    console.log("Database connected successfully");
-    return true;
+    console.log("✅ Database connected successfully");
   } catch (error) {
-    console.error("Database connection failed:", error);
-    return false;
+    console.error("❌ Database connection failed:", error.message);
   }
-};
+})();
 
-module.exports = { sequelize, testConnection };
+module.exports = sequelize;
