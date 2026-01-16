@@ -1,4 +1,4 @@
-export const flashcardPrompt = (text) => `
+const flashcardPrompt = (text) => `
 You are an academic study assistant.
 
 Extract ALL possible flashcards from the content below.
@@ -23,3 +23,5 @@ Output format:
 CONTENT:
 ${text}
 `;
+module.exports = { flashcardPrompt };
+
