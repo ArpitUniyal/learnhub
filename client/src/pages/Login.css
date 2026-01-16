@@ -1,0 +1,208 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #020617, #020617);
+}
+
+.login-card {
+  width: 380px;
+  padding: 30px;
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  color: #fff;
+}
+
+.login-card h2 {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #9ca3af;
+  margin-bottom: 20px;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #ffffff;          /* 🔑 THIS FIXES INVISIBLE TEXT */
+  font-size: 14px;
+}
+
+.login-card input::placeholder {
+  color: #9ca3af;
+}
+
+.login-card button {
+  width: 100%;
+  padding: 12px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-card button:hover {
+  background: #2563eb;
+}
+
+.error-box {
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid #dc2626;
+  color: #fca5a5;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.register-text {
+  margin-top: 14px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.register-text a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+/* === Shared animated background (Home-style) === */
+.login-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-glow {
+  position: absolute;
+  top: 20%;
+  left: 30%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(59,130,246,0.35), transparent);
+  filter: blur(120px);
+  animation: float 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+  100% { transform: translateY(0); }
+}
+
+
+.register-text,
+.switch-text {
+  margin-top: 20px;
+  text-align: center;
+  color: #cbd5f5;
+  font-size: 0.95rem;
+}
+
+.register-text a,
+.switch-text a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 4px;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.register-text a:hover,
+.switch-text a:hover {
+  color: #60a5fa;
+  text-shadow: 0 0 8px rgba(59,130,246,0.8);
+}
+
+/* ===== Shared Animated Background (Login & Register) ===== */
+
+.auth-container {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* floating blue glow */
+.auth-glow {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(59,130,246,0.35), transparent);
+  filter: blur(130px);
+  animation: authFloat 7s ease-in-out infinite;
+}
+
+/* second glow for depth */
+.auth-glow.secondary {
+  top: 60%;
+  left: 65%;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(99,102,241,0.25), transparent);
+  animation-delay: 3s;
+}
+
+@keyframes authFloat {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-35px); }
+  100% { transform: translateY(0); }
+}
+
+/* ensure login/register card stays above animation */
+.auth-card {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* Animated background reused from Home */
+
+.login-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-page .home-glow {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(59,130,246,0.35), transparent);
+  filter: blur(120px);
+  animation: float 6s ease-in-out infinite;
+  z-index: 0;
+}
+
+
+/* ===== Mobile-safe login/register card ===== */
+@media (max-width: 480px) {
+  .login-card {
+    width: 92%;
+    max-width: 380px;
+  }
+}

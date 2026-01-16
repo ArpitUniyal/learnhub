@@ -1,0 +1,125 @@
+/* src/index.css */
+/* FINAL UI POLISH – SAFE, GLOBAL, NO LOGIC CHANGES */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Global Background ---------- */
+body {
+  @apply text-white antialiased;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+}
+
+/* ---------- Glassmorphism Utility ---------- */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* ---------- Scrollbar (Subtle, Premium) ---------- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ---------- Buttons ---------- */
+button {
+  @apply transition-all duration-200 ease-out;
+}
+
+/* ---------- Inputs ---------- */
+input {
+  @apply transition-colors duration-200;
+}
+
+/* ---------- Headings ---------- */
+h1, h2, h3 {
+  @apply tracking-tight;
+}
+
+/* ---------- Utility: Section Spacing ---------- */
+.section {
+  @apply mt-8;
+}
+
+
+/* ===== Platform & Device Safety (ADD-ONLY) ===== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Mobile-safe text scaling */
+html {
+  font-size: clamp(14px, 1.1vw, 18px);
+}
+
+/* Touch-friendly buttons (iOS / Android) */
+button {
+  min-height: 44px;
+}
+
+/* AI-generated content safety */
+.glass {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* KaTeX & MCQ mobile safety */
+.katex-display {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* ===== PDF list mobile safety ===== */
+.pdf-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-card {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pdf-card h4 {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+header {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ===== Speech button mobile safety ===== */
+@media (max-width: 640px) {
+  .speech-toggle {
+    position: static;
+    margin-bottom: 12px;
+  }
+}
