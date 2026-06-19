@@ -1,133 +1,151 @@
-📘 LearnHub – AI-Powered Interactive Learning Platform
+# 📘 LearnHub — AI-Powered Interactive Learning Platform
 
-LearnHub is a full-stack web application that allows users to upload PDFs and automatically generate AI-powered study content such as short notes, summaries, flashcards, formulas, and MCQ quizzes.
-The platform is designed to help students learn faster and more effectively using modern AI models.
+LearnHub turns any PDF into a complete study kit. Upload your notes, textbook chapter, or research paper, and the platform automatically generates **summaries, flashcards, key formula sheets, and adaptive MCQ quizzes** — powered by LLMs, backed by a production-style full-stack architecture.
 
-🚀 Live Demo
+Built to solve a real student problem: turning passive reading material into active, testable learning content in seconds.
 
-Frontend:
-👉 https://nurturing-nature-production.up.railway.app
+---
 
-Backend API:
-👉 https://learnhub-production-4f09.up.railway.app
+## ✨ Key Features
 
-🧠 Key Features
-📂 PDF Management
+### 📂 PDF Management
+- Secure upload, storage, and deletion of PDF study material
+- Text extraction pipeline that processes documents on upload, not on every AI request
 
-Upload PDF study material
+### 🧠 AI-Generated Study Content
+- **Smart Summaries & Notes** — condensed, exam-ready notes from dense material
+- **AI Flashcards** — auto-generated Q&A pairs for active recall
+- **Key Formula Extraction** — pulls and renders formulas using KaTeX, ideal for math/science PDFs
+- **Adaptive MCQ Quizzes** — generated chunk-by-chunk from the source PDF so questions stay grounded in the actual content, with duplicate-avoidance across regenerations
+- **Quiz Scoring & Analytics** — score visualization with Recharts
 
-View uploaded PDFs
+### 🔊 Accessibility
+- Text-to-speech "listen to your notes" feature using the Web Speech API, with a mobile-safe voice-loading fix
 
-Delete PDFs securely
+### 🔐 Authentication & Security
+- JWT-based authentication with normalized token payloads
+- Protected, user-scoped API routes (every resource is isolated per user)
+- Axios interceptors for automatic token attachment on every request
 
-✍️ AI Content Generation
+### ⚡ Real-Time Layer
+- WebSocket server for live quiz events (question changes, answer submissions, typing indicators) using room-based broadcasting
 
-Notes & Summary generation
+### 🧪 Reliability Engineering
+- **Dual-LLM fallback**: Primary generation via Groq (LLaMA 3.3 70B); automatic failover to OpenRouter (Mistral 7B) on rate-limit errors, so AI generation doesn't hard-fail under load
+- **Resilient JSON parsing**: Strips markdown fences and stray model tokens before parsing LLM output, since open models don't always return clean JSON
+- **Chunk-based generation**: Long PDFs are split into manageable text chunks before being sent to the LLM, keeping output focused and within context limits
 
-AI Flashcards
+---
 
-Key Formula extraction
+## 🛠️ Tech Stack
 
-MCQ & Quiz generation
+**Frontend**
+- React.js (Create React App)
+- Chakra UI + Tailwind CSS for styling
+- React Router for navigation
+- Axios with request interceptors
+- Formik + Yup for form handling & validation
+- Recharts for quiz score visualization
+- KaTeX for rendering mathematical formulas
+- React Context API for global auth state
+- Jest + React Testing Library
 
-Quiz regeneration
+**Backend**
+- Node.js + Express.js
+- Sequelize ORM over MySQL
+- JWT for authentication
+- Multer for multipart PDF uploads
+- pdf-parse for text extraction
+- ws for WebSocket-based real-time communication
+- Winston for structured logging + Morgan for request logging
+- express-validator for input validation
 
-Quiz submission & scoring
+**AI / LLM Layer**
+- Groq API (LLaMA 3.3 70B) — primary inference engine
+- OpenRouter (Mistral 7B Instruct) — automatic fallback provider
+- Custom prompt-engineering utilities per content type (summary, flashcards, formulas, MCQs)
 
-🔐 Authentication & Security
+---
 
-JWT-based authentication
+## 🧩 Project Architecture
 
-Protected API routes
-
-Token-based authorization (Axios interceptors)
-
-⚡ Real-Time & Scalable
-
-RESTful API design
-
-Cloud deployment
-
-Environment-based configuration
-
-🛠️ Tech Stack
-Frontend
-
-React.js
-
-Axios
-
-React Router
-
-CSS (custom styling)
-
-Backend
-
-Node.js
-
-Express.js
-
-Sequelize ORM
-
-MySQL
-
-JWT Authentication
-
-AI / APIs
-
-Groq API (LLM inference)
-
-OpenRouter (fallback AI provider)
-
-Deployment
-
-Railway (Backend + Frontend)
-
-GitHub (Version control)
-
-🧩 Project Architecture
+```
 LearnHub/
 │
-├── client/                  # React frontend
+├── client/                      # React frontend
 │   ├── src/
-│   │   ├── api/axios.js
-│   │   ├── pages/
-│   │   ├── components/
+│   │   ├── api/axios.js         # Axios instance + JWT interceptor
+│   │   ├── pages/                # Dashboard, Login, Register, PdfDetails...
+│   │   ├── components/           # Reusable UI + PDF-specific components
+│   │   ├── hooks/                # useSpeechHighlighter (TTS)
+│   │   ├── context/               # AuthContext
 │   │   └── App.jsx
 │
-├── server/                  # Node.js backend
-│   ├── routes/
-│   │   ├── auth.js
-│   │   ├── pdf.js
-│   ├── controllers/
+├── server/                      # Node.js backend
+│   ├── routes/                   # auth, pdf, flashcards, formulas, quizGeneration
+│   ├── controllers/              # Business logic per feature
 │   ├── services/
-│   │   └── aiService.js
-│   ├── middleware/
-│   ├── models/
+│   │   ├── aiService.js          # Groq → OpenRouter fallback orchestration
+│   │   └── quizWebSocket.js      # Real-time quiz events
+│   ├── utils/
+│   │   ├── chunkText.js          # PDF text chunking for LLM calls
+│   │   ├── safeJsonParse.js      # Resilient LLM-output JSON extraction
+│   │   └── *Prompt.js            # Prompt templates per content type
+│   ├── middleware/                # JWT auth, validation
+│   ├── models/                    # Sequelize models (User, Pdf, Flashcard, Formula, QuizSession, QuizQuestion, QuizSubmission)
 │   └── server.js
 │
 └── README.md
+```
 
-🧪 Error Handling & Stability
+---
 
-Graceful API error responses
+## 🧪 How the AI Pipeline Works
 
-AI fallback via OpenRouter
+1. **Upload** — PDF is uploaded via Multer, validated (type + size), and stored.
+2. **Extraction** — `pdf-parse` extracts raw text once at upload time and persists it to MySQL, so repeated AI requests never re-parse the file.
+3. **Chunking** — Extracted text is split into bounded chunks to stay within LLM context limits and keep generated content focused.
+4. **Generation** — Each chunk is sent to Groq's LLaMA 3.3 70B with a content-specific prompt (summary / flashcard / formula / MCQ). Previously generated questions are passed back into the prompt to avoid repetition on regeneration.
+5. **Fallback** — If Groq returns a rate-limit error, the request automatically retries against OpenRouter's free Mistral model — transparent to the user.
+6. **Parsing** — Raw LLM output is cleaned and safely parsed into structured JSON before being saved and returned to the client.
 
-CI-safe production builds
+---
 
-Runtime environment validation
+## 📌 What Makes This Project Strong
 
-📌 What Makes This Project Strong
+- Real-world full-stack architecture with clear separation of concerns
+- Secure, user-scoped authentication and authorization
+- Production-grade error handling, logging, and environment-based configuration
+- Thoughtful reliability engineering around third-party AI APIs (fallback providers, defensive JSON parsing)
+- Real-time capability via WebSockets, not just REST
+- Accessibility consideration (text-to-speech) beyond core functionality
 
-Real-world full-stack architecture
+---
 
-Secure authentication & authorization
+## 🚀 Getting Started
 
-Cloud-deployed & production-ready
+### Prerequisites
+- Node.js >= 16
+- MySQL database
 
-AI integration with fallback logic
+### Backend Setup
+```bash
+cd server
+npm install
+# Configure your .env (DB credentials, JWT_SECRET, GROQ_API_KEY, OPENROUTER_API_KEY)
+npm run dev
+```
 
-Clean separation of frontend & backend
+### Frontend Setup
+```bash
+cd client
+npm install
+# Configure REACT_APP_API_URL in .env
+npm start
+```
 
-Interview-ready complexity
+---
+
+## 📄 License
+
+This project is open for educational and portfolio purposes.
