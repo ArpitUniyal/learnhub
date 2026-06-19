@@ -72,28 +72,100 @@ Built to solve a real student problem: turning passive reading material into act
 ```
 LearnHub/
 │
-├── client/                      # React frontend
+├── client/                              # React frontend
 │   ├── src/
-│   │   ├── api/axios.js         # Axios instance + JWT interceptor
-│   │   ├── pages/                # Dashboard, Login, Register, PdfDetails...
-│   │   ├── components/           # Reusable UI + PDF-specific components
-│   │   ├── hooks/                # useSpeechHighlighter (TTS)
-│   │   ├── context/               # AuthContext
-│   │   └── App.jsx
+│   │   ├── api/
+│   │   │   └── axios.js                 # Axios instance + JWT interceptor
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── Dashboard.jsx            # Main authenticated landing page
+│   │   │   ├── Home.jsx                 # Public landing page
+│   │   │   ├── Login.jsx                # Login form
+│   │   │   ├── Register.jsx             # Signup form
+│   │   │   └── PdfDetails.jsx           # PDF view: notes, flashcards, formulas, quiz
+│   │   │
+│   │   ├── components/
+│   │   │   ├── Header.jsx               # App header
+│   │   │   ├── ShortNotesWithSpeech.jsx # Notes view with TTS playback
+│   │   │   ├── common/
+│   │   │   │   ├── Navbar.jsx           # Navigation bar
+│   │   │   │   └── ProtectedRoute.jsx   # Route guard for authenticated pages
+│   │   │   └── pdf/
+│   │   │       ├── PdfUpload.jsx        # Upload UI + progress handling
+│   │   │       └── PdfList.jsx          # List of uploaded PDFs
+│   │   │
+│   │   ├── hooks/
+│   │   │   └── useSpeechHighlighter.js  # Web Speech API hook (TTS + mobile fix)
+│   │   │
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx          # Global auth state (JWT, user)
+│   │   │
+│   │   ├── utils/
+│   │   │   ├── buildWordMap.js          # Maps spoken words to text for highlighting
+│   │   │   └── normalizeNotes.js        # Cleans/normalizes AI-generated notes
+│   │   │
+│   │   ├── App.jsx                      # Route definitions
+│   │   └── index.js                     # React entry point
+│   │
+│   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   └── package.json
 │
-├── server/                      # Node.js backend
-│   ├── routes/                   # auth, pdf, flashcards, formulas, quizGeneration
-│   ├── controllers/              # Business logic per feature
+├── server/                              # Node.js backend
+│   ├── routes/
+│   │   ├── auth.js                      # Register / login endpoints
+│   │   ├── user.js                      # User profile endpoints
+│   │   ├── pdf.js                       # Upload, list, delete, summary, quiz routes
+│   │   ├── flashcards.js                # Flashcard generation endpoints
+│   │   ├── formulas.js                  # Formula extraction endpoints
+│   │   ├── quizGeneration.js            # Quiz-specific routes
+│   │   └── content.js                   # Shared content routes
+│   │
+│   ├── controllers/
+│   │   ├── authController.js            # Register/login logic, JWT issuing
+│   │   ├── userController.js            # User profile logic
+│   │   ├── summaryController.js         # Notes/summary generation
+│   │   ├── flashcardController.js       # Flashcard generation
+│   │   ├── formulaController.js         # Formula extraction logic
+│   │   └── quizController.js            # Quiz generate/regenerate/submit/score
+│   │
 │   ├── services/
-│   │   ├── aiService.js          # Groq → OpenRouter fallback orchestration
-│   │   └── quizWebSocket.js      # Real-time quiz events
+│   │   ├── aiService.js                 # Groq → OpenRouter fallback orchestration
+│   │   └── quizWebSocket.js             # Real-time quiz events (ws server)
+│   │
 │   ├── utils/
-│   │   ├── chunkText.js          # PDF text chunking for LLM calls
-│   │   ├── safeJsonParse.js      # Resilient LLM-output JSON extraction
-│   │   └── *Prompt.js            # Prompt templates per content type
-│   ├── middleware/                # JWT auth, validation
-│   ├── models/                    # Sequelize models (User, Pdf, Flashcard, Formula, QuizSession, QuizQuestion, QuizSubmission)
-│   └── server.js
+│   │   ├── chunkText.js                 # PDF text chunking for LLM calls
+│   │   ├── safeJsonParse.js             # Resilient LLM-output JSON extraction
+│   │   ├── groqClient.js                # Configured Groq SDK client
+│   │   ├── logger.js                    # Winston logger config
+│   │   ├── summaryPrompt.js             # Prompt template — summaries
+│   │   ├── flashcardPrompt.js           # Prompt template — flashcards
+│   │   ├── formulaPrompt.js             # Prompt template — formulas
+│   │   └── mcqPrompt.js                 # Prompt template — MCQs
+│   │
+│   ├── middleware/
+│   │   ├── auth.js                      # JWT verification + user normalization
+│   │   └── validation.js                # express-validator request validation
+│   │
+│   ├── models/
+│   │   ├── index.js                     # Sequelize init + model loader/associations
+│   │   ├── User.js
+│   │   ├── Pdf.js
+│   │   ├── Flashcard.js
+│   │   ├── Formula.js
+│   │   ├── QuizSession.js
+│   │   ├── QuizQuestion.js
+│   │   └── QuizSubmission.js
+│   │
+│   ├── config/
+│   │   └── database.js                  # Sequelize/MySQL connection config
+│   │
+│   ├── database/
+│   │   └── schema.sql                   # Raw SQL schema
+│   │
+│   ├── listGroqModel.js                 # Utility script to list available Groq models
+│   ├── server.js                        # Express app entry point + WebSocket bootstrap
+│   └── package.json
 │
 └── README.md
 ```
