@@ -179,12 +179,12 @@ LearnHub/
 
 ## 📌 What Makes This Project Strong
 
-- Real-world full-stack architecture with clear separation of concerns
-- Secure, user-scoped authentication and authorization
-- Production-grade error handling, logging, and environment-based configuration
-- Thoughtful reliability engineering around third-party AI APIs (fallback providers, defensive JSON parsing)
-- Real-time capability via WebSockets, not just REST
-- Accessibility consideration (text-to-speech) beyond core functionality
+- Full-stack architecture with a clear separation between React frontend, Express backend, MySQL database, and AI service.
+- Secure JWT-based authentication with user-specific access to uploaded PDFs, notes, quizzes, flashcards, and formulas.
+- AI-powered learning features including automatic generation of short notes, MCQs, flashcards, and formulas from uploaded PDF documents.
+- Robust AI integration with automatic fallback from Groq to OpenRouter and defensive JSON parsing for reliable AI responses.
+- Efficient PDF processing pipeline using PDF text extraction, chunk-based processing, and prompt engineering to handle large documents.
+- Production-ready backend with structured routing, controllers, middleware, Sequelize ORM, centralized error handling, logging, and environment-based configuration.
 
 ---
 
