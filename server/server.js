@@ -110,13 +110,6 @@ const startServer = async () => {
 
     server.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`);
-
-      // WebSocket AFTER DB is ready
-      const QuizWebSocket = require('./services/quizWebSocket');
-      const quizWebSocket = new QuizWebSocket(server);
-      app.set('quizWebSocket', quizWebSocket);
-
-      logger.info('WebSocket server initialized');
     });
   } catch (error) {
     logger.error('Failed to start server:', error);
