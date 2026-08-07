@@ -27,9 +27,6 @@ Built to solve a real student problem: turning passive reading material into act
 - Protected, user-scoped API routes (every resource is isolated per user)
 - Axios interceptors for automatic token attachment on every request
 
-### ⚡ Real-Time Layer
-- WebSocket server for live quiz events (question changes, answer submissions, typing indicators) using room-based broadcasting
-
 ### 🧪 Reliability Engineering
 - **Dual-LLM fallback**: Primary generation via Groq (LLaMA 3.3 70B); automatic failover to OpenRouter (Mistral 7B) on rate-limit errors, so AI generation doesn't hard-fail under load
 - **Resilient JSON parsing**: Strips markdown fences and stray model tokens before parsing LLM output, since open models don't always return clean JSON
@@ -130,7 +127,6 @@ LearnHub/
 │   │
 │   ├── services/
 │   │   ├── aiService.js                 # Groq → OpenRouter fallback orchestration
-│   │   └── quizWebSocket.js             # Real-time quiz events (ws server)
 │   │
 │   ├── utils/
 │   │   ├── chunkText.js                 # PDF text chunking for LLM calls
