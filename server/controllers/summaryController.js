@@ -1,5 +1,4 @@
 const { Pdf } = require("../models");
-/*const groq = require("../utils/groqClient");*/
 const { generateWithAI } = require("../services/aiService");
 const { extractJSON } = require("../utils/safeJsonParse");
 
