@@ -119,11 +119,10 @@ LearnHub/
 │   │   ├── flashcards.js                # Flashcard generation endpoints
 │   │   ├── formulas.js                  # Formula extraction endpoints
 │   │   ├── quizGeneration.js            # Quiz-specific routes
-│   │   └── content.js                   # Shared content routes
+│   │   
 │   │
 │   ├── controllers/
 │   │   ├── authController.js            # Register/login logic, JWT issuing
-│   │   ├── userController.js            # User profile logic
 │   │   ├── summaryController.js         # Notes/summary generation
 │   │   ├── flashcardController.js       # Flashcard generation
 │   │   ├── formulaController.js         # Formula extraction logic
@@ -145,7 +144,6 @@ LearnHub/
 │   │
 │   ├── middleware/
 │   │   ├── auth.js                      # JWT verification + user normalization
-│   │   └── validation.js                # express-validator request validation
 │   │
 │   ├── models/
 │   │   ├── index.js                     # Sequelize init + model loader/associations
