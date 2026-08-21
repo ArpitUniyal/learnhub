@@ -5,26 +5,12 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-console.log("GROQ_API_KEY at runtime:", process.env.GROQ_API_KEY ? "FOUND" : "MISSING");
-
-
-/**
- * Detect ONLY Groq quota / rate limit errors
- */
-function isGroqRateLimitError(err) {
-  return (
-    err?.status === 429 ||
-    err?.error?.error?.code === "rate_limit_exceeded" ||
-    err?.message?.includes("Rate limit")
-  );
-}
-
 /**
  * Primary: Groq
  */
 async function callGroq(prompt) {
   const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model: "openai/gpt-oss-20b",
     messages: [
       { role: "system", content: "You are an educational AI assistant." },
       { role: "user", content: prompt },
@@ -42,7 +28,11 @@ async function callOpenRouter(prompt) {
   const response = await axios.post(
     "https://openrouter.ai/api/v1/chat/completions",
     {
-      model: "mistralai/mistral-7b-instruct", // FREE & reliable
+       model: "nvidia/nemotron-3.5-lightning:free", // primary fallback model
+       
+        models: [
+        "openrouter/free"
+      ],// available free model
       messages: [
         { role: "system", content: "You are an educational AI assistant." },
         { role: "user", content: prompt },
@@ -68,14 +58,28 @@ async function generateWithAI(prompt) {
   try {
     // Try Groq first
     return await callGroq(prompt);
-  } catch (err) {
-    if (isGroqRateLimitError(err)) {
-      console.warn("Groq quota exhausted → using OpenRouter fallback");
+
+  } catch (groqError) {
+    // Any Groq error → fallback to OpenRouter
+    console.warn(
+      "Groq request failed → using OpenRouter fallback:",
+      groqError.message
+    );
+
+    try {
       return await callOpenRouter(prompt);
+
+    } catch (openRouterError) {
+      console.error(
+  "OpenRouter request failed:",
+  openRouterError.response?.data || openRouterError.message
+);
+
+      throw new Error(
+        `Both AI providers failed. Groq: ${groqError.message} | OpenRouter: ${openRouterError.message}`
+      );
     }
-    throw err;
   }
 }
 
 module.exports = { generateWithAI };
-
