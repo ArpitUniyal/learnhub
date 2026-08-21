@@ -28,7 +28,7 @@ Built to solve a real student problem: turning passive reading material into act
 - Axios interceptors for automatic token attachment on every request
 
 ### 🧪 Reliability Engineering
-- **Dual-LLM fallback**: Primary generation via Groq (LLaMA 3.3 70B); automatic failover to OpenRouter (Mistral 7B) on rate-limit errors, so AI generation doesn't hard-fail under load
+- **Dual-LLM fallback**: Primary AI generation via Groq (GPT-OSS 20B); automatic failover to OpenRouter using NVIDIA Nemotron 3.5 Lightning, with openrouter/free as a secondary fallback, ensuring AI generation remains available if a provider or model fails.
 - **Resilient JSON parsing**: Strips markdown fences and stray model tokens before parsing LLM output, since open models don't always return clean JSON
 - **Chunk-based generation**: Long PDFs are split into manageable text chunks before being sent to the LLM, keeping output focused and within context limits
 
@@ -58,8 +58,8 @@ Built to solve a real student problem: turning passive reading material into act
 - express-validator for input validation
 
 **AI / LLM Layer**
-- Groq API (LLaMA 3.3 70B) — primary inference engine
-- OpenRouter (Mistral 7B Instruct) — automatic fallback provider
+- Groq (GPT-OSS 20B) — primary inference engine
+- OpenRouter NVIDIA Nemotron 3.5 Lightning, with openrouter/free — automatic fallback provider
 - Custom prompt-engineering utilities per content type (summary, flashcards, formulas, MCQs)
 
 ---
@@ -131,7 +131,6 @@ LearnHub/
 │   ├── utils/
 │   │   ├── chunkText.js                 # PDF text chunking for LLM calls
 │   │   ├── safeJsonParse.js             # Resilient LLM-output JSON extraction
-│   │   ├── groqClient.js                # Configured Groq SDK client
 │   │   ├── logger.js                    # Winston logger config
 │   │   ├── summaryPrompt.js             # Prompt template — summaries
 │   │   ├── flashcardPrompt.js           # Prompt template — flashcards
@@ -172,7 +171,7 @@ LearnHub/
 2. **Extraction** — `pdf-parse` extracts raw text once at upload time and persists it to MySQL, so repeated AI requests never re-parse the file.
 3. **Chunking** — Extracted text is split into bounded chunks to stay within LLM context limits and keep generated content focused.
 4. **Generation** — Each chunk is sent to Groq's LLaMA 3.3 70B with a content-specific prompt (summary / flashcard / formula / MCQ). Previously generated questions are passed back into the prompt to avoid repetition on regeneration.
-5. **Fallback** — If Groq returns a rate-limit error, the request automatically retries against OpenRouter's free Mistral model — transparent to the user.
+5. **Fallback** — If Groq returns a rate-limit error or any other error, the request automatically retries against OpenRouter's free model — transparent to the user.
 6. **Parsing** — Raw LLM output is cleaned and safely parsed into structured JSON before being saved and returned to the client.
 
 ---
