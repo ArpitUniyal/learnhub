@@ -2,7 +2,7 @@
 
 LearnHub is an AI-powered interactive learning platform that transforms PDF study material into a complete, personalized study kit.
 
-Upload your notes, textbook chapter, lecture material, or research paper and LearnHub automatically generates:
+Upload your notes, textbook chapter, lecture material, or research paper, and LearnHub automatically generates:
 
 - Smart short notes
 - AI-generated flashcards
@@ -10,7 +10,7 @@ Upload your notes, textbook chapter, lecture material, or research paper and Lea
 - MCQ quizzes
 - Quiz scoring and analytics
 
-The platform combines a React frontend, Node.js/Express backend, MySQL database, JWT authentication, and multiple AI providers with automatic fallback for reliable content generation.
+The platform combines a React frontend, a Node.js/Express backend, a MySQL database, JWT authentication, and multiple AI providers with automatic fallback for reliable content generation.
 
 ---
 
@@ -21,7 +21,7 @@ The platform combines a React frontend, Node.js/Express backend, MySQL database,
 - Secure PDF upload, storage, and deletion
 - User-specific PDF isolation
 - Automatic text extraction using `pdf-parse`
-- Extracted text stored in MySQL so PDFs do not need to be re-parsed for every AI request
+- Extracted text stored in MySQL so PDFs don't need to be re-parsed for every AI request
 - PDF-specific learning content generation
 - Deleting a PDF also removes its associated generated learning data
 
@@ -29,7 +29,7 @@ The platform combines a React frontend, Node.js/Express backend, MySQL database,
 
 - **Smart Short Notes** — comprehensive, exam-oriented notes covering important concepts from the uploaded material
 - **AI Flashcards** — automatically generated question-answer pairs for active recall
-- **Key Formula Extraction** — extracts formulas and their symbol/notation meanings from study material
+- **Key Formula Extraction** — extracts formulas along with their symbol/notation meanings
 - **MCQ Quiz Generation** — generates 10 MCQs per quiz from the uploaded PDF
 - **Quiz Regeneration** — generates new questions from previously unused sections of the PDF
 - **Quiz Scoring** — evaluates submitted answers and calculates the score
@@ -38,8 +38,8 @@ The platform combines a React frontend, Node.js/Express backend, MySQL database,
 
 ### 🔊 Accessibility
 
-- Text-to-speech feature for listening to generated notes
-- Uses the Web Speech API
+- Text-to-speech for listening to generated notes
+- Built on the Web Speech API
 - Designed to work across supported desktop and mobile browsers
 
 ### 🔐 Authentication & Security
@@ -50,89 +50,85 @@ The platform combines a React frontend, Node.js/Express backend, MySQL database,
 - User-scoped API access
 - Axios interceptor automatically attaches JWT tokens to API requests
 - Secure logout flow
-- Forgot Password functionality
-- Password Reset functionality
+- Forgot password and password reset functionality
 - Password reset tokens are temporary and single-use
-- Password reset emails are sent through Gmail SMTP
-- Passwords are securely hashed using `bcryptjs`
+- Password reset emails sent via Gmail SMTP
+- Passwords securely hashed using `bcryptjs`
 
 ### 🧪 AI Reliability & Fallback Architecture
 
-LearnHub uses a multi-provider AI architecture:
+LearnHub uses a multi-provider AI architecture so content generation keeps working even if one provider fails or rate-limits:
 
-```text
-Gemini 3.5 Flash-Lite
-        ↓
-Groq GPT-OSS-20B
-        ↓
-OpenRouter Free
+```
+Gemini 3.5 Flash-Lite  →  Groq GPT-OSS-20B  →  OpenRouter Free
+   (primary)               (secondary)          (last resort)
+```
 
+- **Primary AI:** Google Gemini 3.5 Flash-Lite
+- **Secondary fallback:** Groq GPT-OSS-20B
+- **Last-resort fallback:** OpenRouter Free Router / available free model
+- Automatic provider fallback when the primary provider fails or reaches a rate limit
+- Provider-specific timing and error logging
+- Defensive JSON parsing and validation for AI-generated content
+- Content-specific prompt engineering for summaries, flashcards, formulas, and MCQs
 
-Primary AI: Google Gemini 3.5 Flash-Lite
-Secondary fallback: Groq GPT-OSS-20B
-Last-resort fallback: OpenRouter Free Router / available free model
-Automatic provider fallback when the primary provider fails or reaches a rate limit
-Provider-specific timing and error logging
-Defensive JSON parsing and validation for AI-generated content
-Content-specific prompt engineering for summaries, flashcards, formulas, and MCQs
-⚡ AI Performance
+### ⚡ AI Performance
 
-The AI pipeline is designed around chunk-based processing:
+The AI pipeline is built around chunk-based processing:
 
-PDF text is split into manageable chunks
-Each learning module can process chunks independently
-Chunk size can be tuned according to model performance and output quality
-Smaller requests reduce oversized prompts and improve reliability
-AI responses are validated before being saved to the database
-🛠️ Tech Stack
-Frontend
-React.js
-React Router
-Chakra UI + Tailwind CSS
-Axios
-React Context API
-Recharts
-KaTeX
-Web Speech API
-Backend
-Node.js
-Express.js
-Sequelize ORM
-MySQL
-JWT Authentication
-bcryptjs
-Nodemailer
-Multer
-pdf-parse
-express-validator
-Winston
-Morgan
-WebSocket support
-AI / LLM Layer
-Google Gemini 3.5 Flash-Lite — primary AI model
-Groq GPT-OSS-20B — secondary fallback model
-OpenRouter Free Router — last-resort free AI provider
-Custom prompt-engineering utilities for:
-Short notes
-Flashcards
-Formulas
-MCQs
-JSON response validation and parsing
-Database
-MySQL
-Sequelize ORM
+- PDF text is split into manageable chunks
+- Each learning module processes chunks independently
+- Chunk size can be tuned according to model performance and output quality
+- Smaller requests reduce oversized prompts and improve reliability
+- AI responses are validated before being saved to the database
 
-Main entities:
+---
 
-Users
-PDFs
-Short Notes
-Flashcards
-Formulas
-Quiz Sessions
-Quiz Questions
-Quiz Submissions
-🧩 Project Architecture
+## 🛠️ Tech Stack
+
+**Frontend**
+- React.js
+- React Router
+- Chakra UI + Tailwind CSS
+- Axios
+- React Context API
+- Recharts
+- KaTeX
+- Web Speech API
+
+**Backend**
+- Node.js
+- Express.js
+- Sequelize ORM
+- MySQL
+- JWT Authentication
+- bcryptjs
+- Nodemailer
+- Multer
+- pdf-parse
+- express-validator
+- Winston
+- Morgan
+- WebSocket support
+
+**AI / LLM Layer**
+- Google Gemini 3.5 Flash-Lite — primary AI model
+- Groq GPT-OSS-20B — secondary fallback model
+- OpenRouter Free Router — last-resort free AI provider
+- Custom prompt-engineering utilities for short notes, flashcards, formulas, and MCQs
+- JSON response validation and parsing
+
+**Database**
+- MySQL
+- Sequelize ORM
+
+Main entities: `Users`, `PDFs`, `Short Notes`, `Flashcards`, `Formulas`, `Quiz Sessions`, `Quiz Questions`, `Quiz Submissions`
+
+---
+
+## 🧩 Project Architecture
+
+```
 LearnHub/
 │
 ├── client/                              # React frontend
@@ -147,7 +143,7 @@ LearnHub/
 │   │   │   ├── Register.jsx             # Registration page
 │   │   │   ├── ForgotPassword.jsx       # Forgot password page
 │   │   │   ├── ResetPassword.jsx        # Password reset page
-│   │   │   └── PdfDetails.jsx            # PDF learning workspace
+│   │   │   └── PdfDetails.jsx           # PDF learning workspace
 │   │   │
 │   │   ├── components/
 │   │   │   ├── Header.jsx               # Application header + logout
@@ -224,91 +220,48 @@ LearnHub/
 │   └── package.json
 │
 └── README.md
-🤖 AI Provider Architecture
+```
+
+---
+
+## 🤖 AI Provider Architecture
 
 LearnHub uses a layered AI fallback architecture to improve availability and reduce dependency on a single provider.
 
-Primary — Gemini
-Gemini 3.5 Flash-Lite
+| Tier | Provider | Model | Role |
+|------|----------|-------|------|
+| Primary | Gemini | Gemini 3.5 Flash-Lite | Used first for its response quality and low latency |
+| Secondary | Groq | GPT-OSS-20B | Used when Gemini is unavailable or fails |
+| Last Resort | OpenRouter | OpenRouter Free Router | Used when both Gemini and Groq fail or become unavailable |
 
-Used as the primary content-generation model because of its strong response quality and low latency.
+```
+Request → Gemini → (on failure) → Groq → (on failure) → OpenRouter Free
+```
 
-Secondary — Groq
-GPT-OSS-20B
+The application code remains provider-independent through a centralized AI service (`aiService.js`).
 
-Used when Gemini is unavailable or fails.
+---
 
-Last Resort — OpenRouter
-OpenRouter Free Router
+## 🧠 Learning Content Pipeline
 
-Used when both Gemini and Groq fail or become unavailable.
+1. **Upload** — The user uploads a PDF through the React frontend.
+2. **Extraction** — `pdf-parse` extracts the text from the PDF; the extracted text is stored in MySQL.
+3. **Chunking** — Long PDF text is divided into manageable chunks before AI generation, allowing large study materials to be processed without sending the entire PDF in a single request.
+4. **AI Generation** — Each content type uses its own specialized prompt:
 
-This gives the application:
+   ```
+   PDF chunk → Content-specific prompt → Gemini → Groq fallback → OpenRouter fallback
+   ```
 
-Request
-   ↓
-Gemini
-   ↓ failure
-Groq
-   ↓ failure
-OpenRouter Free
+   Generated content includes short notes, flashcards, formulas, and MCQs.
+5. **Validation** — AI output is parsed and validated before being persisted.
+6. **Database Storage** — Generated learning content is stored in MySQL and reused on subsequent requests, avoiding unnecessary AI calls when content already exists.
 
-The application code remains provider-independent through the centralized AI service.
+---
 
-🧠 Learning Content Pipeline
+## 🔐 Password Reset Flow
 
-The learning pipeline works as follows:
-
-1. Upload
-
-The user uploads a PDF through the React frontend.
-
-2. Extraction
-
-pdf-parse extracts the text from the PDF.
-
-The extracted text is stored in MySQL.
-
-3. Chunking
-
-Long PDF text is divided into manageable chunks before AI generation.
-
-This allows the application to process large study materials without sending the entire PDF in a single request.
-
-4. AI Generation
-
-Each content type uses its own specialized prompt:
-
-PDF chunk
-   ↓
-Content-specific prompt
-   ↓
-Gemini
-   ↓
-Groq fallback
-   ↓
-OpenRouter fallback
-
-Generated content includes:
-
-Short Notes
-Flashcards
-Formulas
-MCQs
-5. Validation
-
-AI output is parsed and validated before being persisted.
-
-6. Database Storage
-
-Generated learning content is stored in MySQL and reused on subsequent requests.
-
-This avoids unnecessary AI requests when content already exists.
-
-🔐 Password Reset Flow
-
-LearnHub includes a complete forgot-password and password-reset system.
-
+```
 User clicks "Forgot Password"
         ↓
 Enters registered email
@@ -330,85 +283,92 @@ Password securely hashed
 Reset token invalidated
         ↓
 User can log in with new password
+```
 
 Reset tokens are:
 
-Time-limited
-Stored securely as hashes
-Single-use
-Invalidated after successful password reset
-🗃️ Data Persistence
+- Time-limited
+- Stored securely as hashes
+- Single-use
+- Invalidated after a successful password reset
 
-LearnHub stores generated learning content in MySQL.
+---
 
-This allows:
+## 🗃️ Data Persistence
 
-Fast retrieval of previously generated content
-Reduced AI API usage
-Persistent learning material across sessions
-User-specific content isolation
-Cleanup when PDFs are deleted
+LearnHub stores generated learning content in MySQL, which enables:
+
+- Fast retrieval of previously generated content
+- Reduced AI API usage
+- Persistent learning material across sessions
+- User-specific content isolation
+- Cleanup when PDFs are deleted
 
 Quiz sessions additionally track previously used PDF chunks so quiz regeneration can produce new questions from new source material.
 
-📊 Quiz System
+---
 
-The quiz system generates exactly 10 MCQs per quiz generation.
+## 📊 Quiz System
 
-Each MCQ contains:
+The quiz system generates exactly **10 MCQs** per quiz generation. Each MCQ contains:
 
-Question
-Four options
-One correct answer
+- A question
+- Four options
+- One correct answer
 
 Users can:
 
-Generate a quiz
-Submit answers
-View scores
-Regenerate another quiz
-Continue through new sections of the uploaded PDF
+- Generate a quiz
+- Submit answers
+- View scores
+- Regenerate another quiz
+- Continue through new sections of the uploaded PDF
 
-Quiz data is stored using:
+Quiz data is stored using a `QuizSession → QuizQuestion → QuizSubmission` relationship.
 
-QuizSession
-     ↓
-QuizQuestion
-     ↓
-QuizSubmission
-🔊 Text-to-Speech
+---
 
-LearnHub provides a "listen to your notes" feature using the browser's Web Speech API.
+## 🔊 Text-to-Speech
 
-Users can listen to generated study notes without manually reading the entire content.
+LearnHub provides a "listen to your notes" feature using the browser's Web Speech API, letting users listen to generated study notes without manually reading the entire content.
 
-🛡️ Security
+---
 
-The application includes:
+## 🛡️ Security
 
-JWT authentication
-Protected API routes
-User-scoped PDF access
-User-scoped generated content
-Password hashing with bcryptjs
-Secure password-reset tokens
-Environment-based API credentials
-Gmail App Password authentication for SMTP
-No API keys exposed in the frontend
-🚀 Getting Started
-Prerequisites
-Node.js >= 16
-MySQL
-Google Gemini API key
-Groq API key
-OpenRouter API key
-Gmail SMTP account for password-reset emails
-Backend Setup
+- JWT authentication
+- Protected API routes
+- User-scoped PDF access
+- User-scoped generated content
+- Password hashing with `bcryptjs`
+- Secure password-reset tokens
+- Environment-based API credentials
+- Gmail App Password authentication for SMTP
+- No API keys exposed in the frontend
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js >= 16
+- MySQL
+- Google Gemini API key
+- Groq API key
+- OpenRouter API key
+- Gmail SMTP account for password-reset emails
+
+### Backend Setup
+
+```bash
 cd server
 npm install
+```
 
-Create a .env file:
+Create a `.env` file:
 
+```env
 NODE_ENV=development
 PORT=5000
 
@@ -433,66 +393,81 @@ SMTP_PASS=your_gmail_app_password
 CLIENT_URL=http://localhost:3000
 
 DB_LOGGING=true
+```
 
 Then start the backend:
 
+```bash
 npm run dev
-Frontend Setup
+```
+
+### Frontend Setup
+
+```bash
 cd client
 npm install
+```
 
-Configure:
+Configure the frontend environment:
 
+```env
 REACT_APP_API_URL=http://localhost:5000/api
+```
 
 Then start the frontend:
 
+```bash
 npm start
-📁 Environment Variables
+```
 
-Never commit .env files to GitHub.
+---
 
-The following credentials must remain private:
+## 📁 Environment Variables
 
-GEMINI_API_KEY
-GROQ_API_KEY
-OPENROUTER_API_KEY
-SMTP_PASS
-JWT_SECRET
-DB_PASSWORD
+Never commit `.env` files to GitHub. The following credentials must remain private:
+
+- `GEMINI_API_KEY`
+- `GROQ_API_KEY`
+- `OPENROUTER_API_KEY`
+- `SMTP_PASS`
+- `JWT_SECRET`
+- `DB_PASSWORD`
 
 For Gmail SMTP, use a Google App Password instead of your normal Gmail password.
 
-📌 What Makes LearnHub Strong
-Full-stack React + Node.js + MySQL architecture
-Secure JWT authentication
-Persistent authentication across browser restarts
-Complete forgot-password and password-reset workflow
-PDF text extraction and persistent storage
-AI-generated short notes, flashcards, formulas, and quizzes
-Multi-provider AI fallback architecture
-Gemini-powered low-latency AI generation
-Groq secondary fallback
-OpenRouter free fallback
-Chunk-based processing for large documents
-Database caching to reduce repeated AI calls
-Quiz regeneration using new PDF sections
-User-specific data isolation
-Text-to-speech accessibility
-Structured backend architecture with routes, controllers, services, middleware, utilities, and models
-Environment-based configuration and centralized AI provider management
-📈 Future Improvements
+---
 
-Potential future enhancements include:
+## 📌 What Makes LearnHub Strong
 
-AI-powered personalized learning paths
-Spaced repetition scheduling
-Progress tracking across multiple PDFs
-Topic-level mastery analytics
-More advanced quiz difficulty adaptation
-Vector search / RAG for semantic document retrieval
-Mobile-first improvements
-More AI provider integrations
-📄 License
+- Full-stack React + Node.js + MySQL architecture
+- Secure JWT authentication with persistent login across browser restarts
+- Complete forgot-password and password-reset workflow
+- PDF text extraction and persistent storage
+- AI-generated short notes, flashcards, formulas, and quizzes
+- Multi-provider AI fallback architecture (Gemini → Groq → OpenRouter)
+- Chunk-based processing for large documents
+- Database caching to reduce repeated AI calls
+- Quiz regeneration using new PDF sections
+- User-specific data isolation
+- Text-to-speech accessibility
+- Structured backend architecture with routes, controllers, services, middleware, utilities, and models
+- Environment-based configuration and centralized AI provider management
+
+---
+
+## 📈 Future Improvements
+
+- AI-powered personalized learning paths
+- Spaced repetition scheduling
+- Progress tracking across multiple PDFs
+- Topic-level mastery analytics
+- More advanced quiz difficulty adaptation
+- Vector search / RAG for semantic document retrieval
+- Mobile-first improvements
+- More AI provider integrations
+
+---
+
+## 📄 License
 
 This project is open for educational and portfolio purposes.
