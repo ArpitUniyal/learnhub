@@ -21,6 +21,15 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    reset_password_token: {
+  type: DataTypes.STRING(255),
+  allowNull: true
+},
+
+reset_password_expires: {
+  type: DataTypes.DATE,
+  allowNull: true
+},
     role: {
       type: DataTypes.ENUM('student', 'instructor', 'admin'),
       defaultValue: 'student'
@@ -37,10 +46,12 @@ module.exports = (sequelize) => {
   });
 
   // Hash password ONLY on create
-  User.beforeCreate(async (user) => {
+  User.beforeSave(async (user) => {
+  if (user.changed("password")) {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
-  });
+  }
+});
 
   return User;
 };
