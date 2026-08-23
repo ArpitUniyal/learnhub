@@ -32,6 +32,32 @@ CREATE TABLE IF NOT EXISTS pdfs (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Short Notes
+CREATE TABLE short_notes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pdf_id INT NOT NULL,
+    user_id INT NOT NULL,
+    note TEXT NOT NULL,
+    chunk_id INT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_short_notes_pdf (pdf_id),
+    INDEX idx_short_notes_user (user_id),
+    INDEX idx_short_notes_chunk (chunk_id),
+
+    CONSTRAINT fk_short_notes_pdf
+        FOREIGN KEY (pdf_id)
+        REFERENCES pdfs(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_short_notes_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+);
+
 /* ================================
    QUIZ SESSIONS
    ================================ */
