@@ -81,6 +81,15 @@ navigate("/dashboard");
   </span>
 </div>
 
+<p className="mt-2 text-sm">
+  <Link
+    to="/forgot-password"
+    className="text-blue-400 hover:text-blue-300"
+  >
+    Forgot Password?
+  </Link>
+</p>
+
 
           {/* ✅ SUBMIT BUTTON INSIDE FORM */}
           <button type="submit">Login</button>
