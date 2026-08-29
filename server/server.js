@@ -54,6 +54,7 @@ const authRoutes = require('./routes/auth');
 const pdfRoutes = require('./routes/pdf');
 const flashcardRoutes = require('./routes/flashcards');
 const formulaRoutes = require("./routes/formulas");
+const paymentRoutes = require("./routes/payment");
 
 
 
@@ -82,6 +83,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/pdf', flashcardRoutes);
 app.use("/api/pdf", formulaRoutes);
+app.use("/api/payment", paymentRoutes);
 
 
 
