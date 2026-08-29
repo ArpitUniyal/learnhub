@@ -29,21 +29,19 @@ exports.register = async (req, res) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      role: user.role
+      is_premium: user.is_premium
     }
   });
 };
 
-/**
- * LOGIN  ✅ FIXED FOREVER
- */
+
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   // 🔥 IMPORTANT PART
   const user = await User.scope(null).findOne({
     where: { email },
-    attributes: ['id', 'name', 'email', 'role', 'password']
+    attributes: ['id', 'name', 'email', 'password','is_premium']
   });
 
   if (!user) {
@@ -67,7 +65,7 @@ exports.login = async (req, res) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      role: user.role
+      is_premium: user.is_premium
     }
   });
 };
@@ -200,7 +198,7 @@ exports.resetPassword = async (req, res) => {
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.userId, {
-      attributes: ['id', 'name', 'email', 'role']
+      attributes: ['id', 'name', 'email','is_premium']
     });
 
     if (!user) {
