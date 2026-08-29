@@ -30,10 +30,11 @@ reset_password_expires: {
   type: DataTypes.DATE,
   allowNull: true
 },
-    role: {
-      type: DataTypes.ENUM('student', 'instructor', 'admin'),
-      defaultValue: 'student'
-    }
+    is_premium: {
+  type: DataTypes.BOOLEAN,
+  allowNull: false,
+  defaultValue: false
+}
   }, {
     tableName: 'users',
     timestamps: true,
