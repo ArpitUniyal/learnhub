@@ -46,23 +46,5 @@ const auth = (req, res, next) => {
   }
 };
 
-/**
- * ROLE-BASED AUTHORIZATION (unchanged)
- */
-const authorize = (...roles) => {
-  return (req, res, next) => {
-    if (!req.user || !req.user.role) {
-      return res.status(403).json({ msg: "Access denied" });
-    }
-
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        msg: `Role ${req.user.role} is not allowed`
-      });
-    }
-
-    next();
-  };
-};
 
 module.exports = { auth, authorize };
