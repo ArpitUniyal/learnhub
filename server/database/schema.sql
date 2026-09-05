@@ -1,47 +1,59 @@
-/* ================================
-   LearnHub – Production DB Schema
-   ================================ */
+CREATE DATABASE IF NOT EXISTS ai_learning;
+USE ai_learning;
 
-/* ================================
-   USERS
-   ================================ */
+-- ============================================
+-- USERS
+-- ============================================
+
 CREATE TABLE IF NOT EXISTS users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  is_premium BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    reset_password_token VARCHAR(255) NULL,
+    reset_password_expires DATETIME NULL,
+    is_premium BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+
+    INDEX idx_users_email (email)
 );
 
-/* ================================
-   PDF UPLOADS
-   ================================ */
+
+-- ============================================
+-- PDFS
+-- ============================================
+
 CREATE TABLE IF NOT EXISTS pdfs (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  original_name VARCHAR(255) NOT NULL,
-  file_name VARCHAR(255) NOT NULL,
-  file_path VARCHAR(255) NOT NULL,
-  file_size BIGINT NOT NULL,
-  status VARCHAR(20) DEFAULT 'uploaded',
-  extracted_text LONGTEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    file_size INT NOT NULL,
+    status VARCHAR(20) DEFAULT 'uploaded',
+    extracted_text LONGTEXT NULL,
+    created_at DATETIME NOT NULL,
+
+    INDEX idx_pdfs_user (user_id),
+
+    CONSTRAINT fk_pdfs_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
 );
 
--- Short Notes
-CREATE TABLE short_notes (
+
+-- ============================================
+-- SHORT NOTES
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS short_notes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pdf_id INT NOT NULL,
     user_id INT NOT NULL,
     note TEXT NOT NULL,
     chunk_id INT NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-        ON UPDATE CURRENT_TIMESTAMP,
 
     INDEX idx_short_notes_pdf (pdf_id),
     INDEX idx_short_notes_user (user_id),
@@ -58,94 +70,148 @@ CREATE TABLE short_notes (
         ON DELETE CASCADE
 );
 
-/* ================================
-   QUIZ SESSIONS
-   ================================ */
+
+-- ============================================
+-- QUIZ SESSIONS
+-- ============================================
+
 CREATE TABLE IF NOT EXISTS quiz_sessions (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  pdf_id INT NOT NULL,
-  status ENUM('in_progress','completed') DEFAULT 'in_progress',
-  score DECIMAL(5,2),
-  total_questions INT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  completed_at TIMESTAMP NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (pdf_id) REFERENCES pdfs(id) ON DELETE CASCADE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pdf_id INT NOT NULL,
+    user_id INT NOT NULL,
+
+    used_chunk_ids JSON NOT NULL,
+
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+
+    INDEX idx_quiz_sessions_pdf (pdf_id),
+    INDEX idx_quiz_sessions_user (user_id),
+
+    CONSTRAINT fk_quiz_sessions_pdf
+        FOREIGN KEY (pdf_id)
+        REFERENCES pdfs(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_quiz_sessions_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
 );
 
-/* ================================
-   QUIZ QUESTIONS
-   ================================ */
+
+-- ============================================
+-- QUIZ QUESTIONS
+-- ============================================
+
 CREATE TABLE IF NOT EXISTS quiz_questions (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  session_id INT NOT NULL,
-  question TEXT NOT NULL,
-  options JSON NOT NULL,
-  correct_answer VARCHAR(255) NOT NULL,
-  chunk_id INT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (session_id) REFERENCES quiz_sessions(id) ON DELETE CASCADE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    session_id INT NOT NULL,
+    question TEXT NULL,
+    options JSON NULL,
+    correct_answer VARCHAR(255) NULL,
+    chunk_id INT NULL,
+
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+
+    INDEX idx_quiz_questions_session (session_id),
+
+    CONSTRAINT fk_quiz_questions_session
+        FOREIGN KEY (session_id)
+        REFERENCES quiz_sessions(id)
+        ON DELETE CASCADE
 );
 
-/* ================================
-   QUIZ SUBMISSIONS
-   ================================ */
+
+-- ============================================
+-- QUIZ SUBMISSIONS
+-- ============================================
+
 CREATE TABLE IF NOT EXISTS quiz_submissions (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  session_id INT NOT NULL,
-  question_id INT NOT NULL,
-  user_answer TEXT,
-  is_correct BOOLEAN,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (session_id) REFERENCES quiz_sessions(id) ON DELETE CASCADE,
-  FOREIGN KEY (question_id) REFERENCES quiz_questions(id) ON DELETE CASCADE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    session_id INT NOT NULL,
+    question_id INT NOT NULL,
+    selected_answer VARCHAR(255) NOT NULL,
+    user_id INT NOT NULL,
+
+    INDEX idx_quiz_submissions_session (session_id),
+    INDEX idx_quiz_submissions_question (question_id),
+    INDEX idx_quiz_submissions_user (user_id),
+
+    CONSTRAINT fk_quiz_submissions_session
+        FOREIGN KEY (session_id)
+        REFERENCES quiz_sessions(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_quiz_submissions_question
+        FOREIGN KEY (question_id)
+        REFERENCES quiz_questions(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_quiz_submissions_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
 );
 
-/* ================================
-   FLASHCARDS
-   ================================ */
+
+-- ============================================
+-- FLASHCARDS
+-- ============================================
+
 CREATE TABLE IF NOT EXISTS flashcards (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  pdf_id INT NOT NULL,
-  front_text TEXT NOT NULL,
-  back_text TEXT NOT NULL,
-  difficulty ENUM('easy','medium','hard') DEFAULT 'medium',
-  next_review_date DATE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (pdf_id) REFERENCES pdfs(id) ON DELETE CASCADE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    pdf_id INT NOT NULL,
+
+    front TEXT NOT NULL,
+    back TEXT NOT NULL,
+
+    chunk_id INT NOT NULL,
+
+    INDEX idx_flashcards_user (user_id),
+    INDEX idx_flashcards_pdf (pdf_id),
+    INDEX idx_flashcards_chunk (chunk_id),
+
+    CONSTRAINT fk_flashcards_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_flashcards_pdf
+        FOREIGN KEY (pdf_id)
+        REFERENCES pdfs(id)
+        ON DELETE CASCADE
 );
 
-/* ================================
-   FORMULAS
-   ================================ */
+
+-- ============================================
+-- FORMULAS
+-- ============================================
+
 CREATE TABLE IF NOT EXISTS formulas (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  pdf_id INT NOT NULL,
-  formula_text TEXT NOT NULL,
-  description TEXT,
-  variables JSON,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (pdf_id) REFERENCES pdfs(id) ON DELETE CASCADE
-);
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    pdf_id INT NOT NULL,
 
-/* ================================
-   INDEXES (PERFORMANCE)
-   ================================ */
-CREATE INDEX idx_pdfs_user ON pdfs(user_id);
-CREATE INDEX idx_quiz_sessions_user ON quiz_sessions(user_id);
-CREATE INDEX idx_quiz_sessions_pdf ON quiz_sessions(pdf_id);
-CREATE INDEX idx_quiz_questions_session ON quiz_questions(session_id);
-CREATE INDEX idx_quiz_submissions_session ON quiz_submissions(session_id);
-CREATE INDEX idx_quiz_submissions_question ON quiz_submissions(question_id);
-CREATE INDEX idx_flashcards_user ON flashcards(user_id);
-CREATE INDEX idx_formulas_user ON formulas(user_id);
+    formula TEXT NOT NULL,
+    explanation TEXT NOT NULL,
+    formula_usage TEXT NULL,
+
+    chunk_id INT NOT NULL DEFAULT 0,
+
+    INDEX idx_formulas_user (user_id),
+    INDEX idx_formulas_pdf (pdf_id),
+    INDEX idx_formulas_chunk (chunk_id),
+
+    CONSTRAINT fk_formulas_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_formulas_pdf
+        FOREIGN KEY (pdf_id)
+        REFERENCES pdfs(id)
+        ON DELETE CASCADE
+);
