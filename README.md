@@ -228,7 +228,6 @@ LearnHub/
 │   │   └── QuizSubmission.js
 │   │   
 │   ├── config/
-│   │   |── database.js
 │   │   └── razorpay.js
 |
 │   ├── database/
