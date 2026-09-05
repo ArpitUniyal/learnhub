@@ -9,18 +9,16 @@ const quizController = require("../controllers/quizController");
 
 console.log("🔥 PDF ROUTES FILE LOADED:", __filename);
 
-// Ensure uploads directory
-const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+const storage = multer.memoryStorage();
 
-// Multer config (⚠️ UNCHANGED)
-const storage = multer.diskStorage({
-  destination: uploadDir,
-  filename: (req, file, cb) => {
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, `${unique}.pdf`);
+const upload = multer({
+  storage,
+  limits: { fileSize: 25 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype !== 'application/pdf') {
+      return cb(new Error('Only PDF files allowed'));
+    }
+    cb(null, true);
   }
 });
 
@@ -61,10 +59,10 @@ router.post(
         return res.status(400).json({ message: "No PDF file uploaded" });
       }
 
-      console.log("📄 File saved by Multer:", req.file.path);
+     console.log("📄 PDF received in memory:", req.file.originalname);
 
-      const buffer = fs.readFileSync(req.file.path);
-      console.log("📦 File read into buffer");
+     const buffer = req.file.buffer;
+     console.log("📦 PDF buffer ready");
 
       const parsed = await pdfParse(buffer);
       console.log("🧠 PDF parsed successfully");
@@ -72,8 +70,8 @@ router.post(
       const pdf = await Pdf.create({
         user_id: req.user.id,
         original_name: req.file.originalname,
-        file_name: req.file.filename,
-        file_path: req.file.path,
+        file_name: req.file.originalname,
+        file_path: "memory-only",
         file_size: req.file.size,
         extracted_text: parsed.text,
         status: "processed",
@@ -128,17 +126,10 @@ router.delete('/:id', auth, async (req, res) => {
       });
     }
 
-    // 2. Delete file from disk (safe)
-    if (pdf.file_path && fs.existsSync(pdf.file_path)) {
-      fs.unlinkSync(pdf.file_path);
-      console.log("🗑️ PDF file deleted:", pdf.file_path);
-    } else {
-      console.warn("⚠️ PDF file not found on disk:", pdf.file_path);
-    }
-
-    // 3. Delete DB record
-    await pdf.destroy();
-    console.log("🗑️ PDF record deleted from DB:", id);
+    // Delete the database record.
+// The original PDF is not permanently stored on the server.
+await pdf.destroy();
+console.log("🗑️ PDF record deleted from DB:", id);
 
     return res.status(200).json({
       message: "PDF deleted successfully"
