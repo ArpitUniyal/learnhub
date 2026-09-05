@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const { auth } = require('../middleware/auth');
-const { Pdf } = require('../models');
+const { Pdf, User } = require('../models');
 const { generateSummary } = require('../controllers/summaryController');
 const quizController = require("../controllers/quizController");
 
@@ -46,6 +46,25 @@ router.post(
         console.log("❌ No file received by Multer");
         return res.status(400).json({ message: "No PDF file uploaded" });
       }
+      // Check user's PDF upload limit
+const user = await User.findByPk(req.user.id);
+
+if (!user) {
+  return res.status(404).json({ message: "User not found" });
+}
+
+if (!user.is_premium) {
+  const pdfCount = await Pdf.count({
+    where: { user_id: req.user.id }
+  });
+
+  if (pdfCount >= 3) {
+    return res.status(403).json({
+      message:
+        "Free users can upload up to 3 PDFs. Upgrade to Premium for unlimited uploads."
+    });
+  }
+}
 
      console.log("📄 PDF received in memory:", req.file.originalname);
 
