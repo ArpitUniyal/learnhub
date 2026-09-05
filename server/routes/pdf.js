@@ -22,17 +22,6 @@ const upload = multer({
   }
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 25 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype !== 'application/pdf') {
-      return cb(new Error('Only PDF files allowed'));
-    }
-    cb(null, true);
-  }
-});
-
 /**
  * ============================
  * POST /api/pdf/upload
