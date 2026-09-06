@@ -36,7 +36,7 @@ async function callGemini(prompt) {
         headers: {
           "Content-Type": "application/json",
         },
-        timeout: 60000,
+        timeout: 10000,
       }
     );
 
