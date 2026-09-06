@@ -23,13 +23,23 @@ const logger = winston.createLogger({
 ]
 });
 
-// Middleware
+const allowedOrigin = (process.env.CORS_ORIGIN || "").trim();
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "*",
+    origin: allowedOrigin,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.options("*", cors({
+  origin: allowedOrigin,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
