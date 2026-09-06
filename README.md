@@ -60,8 +60,8 @@ Gemini → Groq → OpenRouter
 (primary)  (fallback)  (last resort)
 ```
 
-- **Primary:** Google Gemini
-- **Secondary:** Groq
+- **Primary:** Google Gemini 3.5 Flash-Lite
+- **Secondary:** Groq GPT-OSS-20B
 - **Last resort:** OpenRouter free routing
 - Automatic fallback when an AI provider fails or becomes unavailable
 - Provider timing and error logging
