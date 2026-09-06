@@ -34,54 +34,39 @@ router.post(
 
   async (req, res) => {
     try {
-      const totalStart = Date.now();
-
       console.log("📥 Upload request received");
 
       if (!req.file) {
         console.log("❌ No file received by Multer");
         return res.status(400).json({ message: "No PDF file uploaded" });
       }
-
       // Check user's PDF upload limit
-      const userStart = Date.now();
-      const user = await User.findByPk(req.user.id);
-      console.log(`📊 User DB query: ${Date.now() - userStart} ms`);
+const user = await User.findByPk(req.user.id);
 
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
+if (!user) {
+  return res.status(404).json({ message: "User not found" });
+}
 
-      if (!user.is_premium) {
-        const countStart = Date.now();
+if (!user.is_premium) {
+  const pdfCount = await Pdf.count({
+    where: { user_id: req.user.id }
+  });
 
-        const pdfCount = await Pdf.count({
-          where: { user_id: req.user.id }
-        });
+  if (pdfCount >= 3) {
+    return res.status(403).json({
+      message:
+        "Free users can upload up to 3 PDFs. Upgrade to Premium for unlimited uploads."
+    });
+  }
+}
 
-        console.log(`📊 PDF count query: ${Date.now() - countStart} ms`);
+     console.log("📄 PDF received in memory:", req.file.originalname);
 
-        if (pdfCount >= 3) {
-          return res.status(403).json({
-            message:
-              "Free users can upload up to 3 PDFs. Upgrade to Premium for unlimited uploads."
-          });
-        }
-      }
-
-      console.log("📄 PDF received in memory:", req.file.originalname);
-
-      const buffer = req.file.buffer;
-      console.log("📦 PDF buffer ready");
-
-      const parseStart = Date.now();
+     const buffer = req.file.buffer;
+     console.log("📦 PDF buffer ready");
 
       const parsed = await pdfParse(buffer);
-
-      console.log(`📊 PDF parsing: ${Date.now() - parseStart} ms`);
       console.log("🧠 PDF parsed successfully");
-
-      const saveStart = Date.now();
 
       const pdf = await Pdf.create({
         user_id: req.user.id,
@@ -93,10 +78,7 @@ router.post(
         status: "processed",
       });
 
-      console.log(`📊 PDF DB save: ${Date.now() - saveStart} ms`);
       console.log("💾 PDF saved to DB");
-
-      console.log(`📊 UPLOAD TOTAL: ${Date.now() - totalStart} ms`);
 
       return res.status(200).json({ pdf });
 
@@ -106,6 +88,7 @@ router.post(
     }
   }
 );
+
 
 /**
  * ============================
