@@ -23,7 +23,10 @@ const logger = winston.createLogger({
 ]
 });
 
-const allowedOrigin = (process.env.CORS_ORIGIN || "").trim();
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://dark-band-7a4a.arpituniyal12.workers.dev",
+];
 
 app.use(
   cors({
