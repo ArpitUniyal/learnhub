@@ -1,4 +1,3 @@
-
 const axios = require("axios");
 const Groq = require("groq-sdk");
 
@@ -145,7 +144,7 @@ async function callOpenRouter(prompt) {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
         },
-        timeout: 60000,
+        timeout: 10000,
       }
     );
 
