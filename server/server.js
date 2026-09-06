@@ -76,7 +76,9 @@ app.use("/api/pdf", formulaRoutes);
 app.use("/api/payment", paymentRoutes);
 
 
-
+app.get('*', (req, res) => {
+  res.json({ path: req.path });
+});
 
 // 404
 app.use((req, res) => {
