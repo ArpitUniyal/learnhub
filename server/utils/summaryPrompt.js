@@ -25,9 +25,9 @@ COVERAGE RULES:
 - Notes should be concise but sufficiently detailed for exam revision.
 
 QUANTITY RULES:
-- Generate AT LEAST 40 notes for every request.
-- Prefer 50-60 useful notes when the supplied material contains enough information.
-- Never generate fewer than 40 notes unless the supplied material genuinely contains fewer than 40 distinct important points.
+- Generate AT LEAST 30 notes for every request.
+- Prefer 35-50 useful notes when the supplied material contains enough information.
+- Never generate fewer than 30 notes unless the supplied material genuinely contains fewer than 30 distinct important points.
 - Do not create meaningless or repetitive notes just to reach the minimum.
 - Completeness and coverage are more important than extreme brevity.
 
@@ -53,7 +53,7 @@ JSON FORMAT:
 }
 
 Before finishing, review the ENTIRE supplied material and ensure that:
-1. At least 40-50 distinct useful notes are generated when the material supports them.
+1. At least 30-40 distinct useful notes are generated when the material supports them.
 2. Important concepts from the beginning, middle, and end of the material are covered.
 3. No major concept is omitted.
 4. The JSON object is completely closed and valid.
