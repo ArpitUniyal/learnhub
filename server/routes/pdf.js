@@ -95,10 +95,19 @@ if (!user.is_premium) {
  * ============================
  */
 router.get('/', auth, async (req, res) => {
+  const start = Date.now();
+
+  const dbStart = Date.now();
+
   const pdfs = await Pdf.findAll({
     where: { user_id: req.user.id },
     order: [['created_at', 'DESC']]
   });
+
+  const dbTime = Date.now() - dbStart;
+
+  console.log(`📊 PDF DB QUERY: ${dbTime} ms`);
+  console.log(`📊 PDF TOTAL REQUEST: ${Date.now() - start} ms`);
 
   res.json(pdfs);
 });
