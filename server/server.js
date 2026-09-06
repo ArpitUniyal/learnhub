@@ -100,9 +100,10 @@ const startServer = async () => {
     await db.sequelize.sync();
 
 
-    server.listen(PORT, () => {
-      logger.info(`Server running on port ${PORT}`);
-    });
+    server.listen(PORT, '0.0.0.0', () => {
+  logger.info(`Server running on port ${PORT}`);
+});
+    
   } catch (error) {
     logger.error('Failed to start server:', error);
     process.exit(1);
