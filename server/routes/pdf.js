@@ -32,12 +32,6 @@ router.post(
   auth,
   upload.single("pdf"),
 
-  // 🔍 DEBUG MIDDLEWARE — TEMPORARY
-  (req, res, next) => {
-    console.log("🧪 DEBUG req.file =", req.file);
-    next();
-  },
-
   async (req, res) => {
     try {
       console.log("📥 Upload request received");
