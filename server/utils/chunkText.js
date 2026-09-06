@@ -1,4 +1,4 @@
-function chunkText(text, chunkSize = 6000, overlap = 500) {
+function chunkText(text, chunkSize = 10000, overlap = 100) {
   const chunks = [];
   let start = 0;
 
