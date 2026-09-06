@@ -164,7 +164,6 @@ LearnHub/
 │   │   │   ├── Header.jsx               # Application header + premium/payment UI + logout
 │   │   │   ├── ShortNotesWithSpeech.jsx # Notes + text-to-speech
 │   │   │   ├── common/
-│   │   │   │   ├── Navbar.jsx
 │   │   │   │   └── ProtectedRoute.jsx   # Authentication route guard
 │   │   │   └── pdf/
 │   │   │       ├── PdfUpload.jsx
@@ -206,8 +205,7 @@ LearnHub/
 │   │
 │   ├── utils/
 │   │   ├── chunkText.js                 # PDF chunking
-│   │   ├── safeJsonParse.js             # AI JSON parsing
-│   │   ├── logger.js                    # Winston logger
+│   │   ├── safeJsonParse.js             # AI JSON parsing              
 │   │   ├── summaryPrompt.js
 │   │   ├── flashcardPrompt.js
 │   │   ├── formulaPrompt.js
