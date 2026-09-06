@@ -23,7 +23,7 @@
     "pdf-parse": "^1.1.1",
     "razorpay": "^2.9.8",
     "sequelize": "^6.37.7",
-    "winston": "^3.18.3",
+    "winston": "^3.18.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
