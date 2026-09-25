@@ -51,6 +51,8 @@ const db = require('./models');
 // Routes
 const authRoutes = require('./routes/auth');
 const pdfRoutes = require('./routes/pdf');
+const summaryRoutes = require("./routes/summary");
+const quizRoutes = require("./routes/quiz");
 const flashcardRoutes = require('./routes/flashcards');
 const formulaRoutes = require("./routes/formulas");
 const paymentRoutes = require("./routes/payment");
@@ -80,6 +82,8 @@ app.get('/api/health', async (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/pdf', pdfRoutes);
+app.use("/api/pdf", summaryRoutes);
+app.use("/api/pdf", quizRoutes);
 app.use('/api/pdf', flashcardRoutes);
 app.use("/api/pdf", formulaRoutes);
 app.use("/api/payment", paymentRoutes);
