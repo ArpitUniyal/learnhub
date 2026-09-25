@@ -188,14 +188,8 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 
-/**
- * ============================
- * EXISTING AI ROUTES (UNCHANGED)
- * ============================
- */
 router.post('/:id/summary', auth, generateSummary);
 router.post('/:id/quiz', auth, quizController.generateQuiz);
-//router.get('/:id/quiz', auth, quizController.getQuiz);
 router.post("/:id/quiz/regenerate", auth, quizController.regenerateQuiz);
 
 router.post("/:id/quiz/submit", auth, quizController.submitQuiz);
