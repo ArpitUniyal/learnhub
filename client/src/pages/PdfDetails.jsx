@@ -25,6 +25,7 @@ export default function PdfDetails() {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [scoreData, setScoreData] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   // ===== Helper: Reset all content =====
   const resetAllContent = () => {
@@ -120,23 +121,28 @@ export default function PdfDetails() {
     setSelectedAnswers(prev => ({ ...prev, [questionId]: option }));
   };
 
+  
   const submitQuiz = async () => {
-    try {
-      const payload = Object.entries(selectedAnswers).map(
-        ([question_id, selected_answer]) => ({
-          question_id: Number(question_id),
-          selected_answer,
-        })
-      );
+  setSubmitting(true);
 
-      await axios.post(`/pdf/${id}/quiz/submit`, { answers: payload });
-      const scoreRes = await axios.get(`/pdf/${id}/quiz/score`);
-      setScoreData(scoreRes.data);
-      setSubmitted(true);
-    } catch {
-      setError("Quiz submission failed.");
-    }
-  };
+  try {
+    const payload = Object.entries(selectedAnswers).map(
+      ([question_id, selected_answer]) => ({
+        question_id: Number(question_id),
+        selected_answer,
+      })
+    );
+
+    await axios.post(`/pdf/${id}/quiz/submit`, { answers: payload });
+    const scoreRes = await axios.get(`/pdf/${id}/quiz/score`);
+    setScoreData(scoreRes.data);
+    setSubmitted(true);
+  } catch {
+    setError("Quiz submission failed.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <>
@@ -232,13 +238,14 @@ export default function PdfDetails() {
             ))}
 
             {!submitted && (
-              <button
-                onClick={submitQuiz}
-                className="mt-4 px-4 py-2 rounded bg-white/20"
-              >
-                Submit Quiz
-              </button>
-            )}
+  <button
+    onClick={submitQuiz}
+    disabled={submitting}
+    className="mt-4 px-4 py-2 rounded bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    Submit Quiz
+  </button>
+)}
 
             {scoreData && (
   <div className="mt-6 glass p-5 rounded-xl">
