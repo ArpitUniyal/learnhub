@@ -4,11 +4,9 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const winston = require('winston');
-const http = require('http');
 
-// App + Server
+// App
 const app = express();
-const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 
 // Logger
@@ -19,15 +17,26 @@ const logger = winston.createLogger({
     winston.format.json()
   ),
   transports: [
-  new winston.transports.Console()
-]
+    new winston.transports.Console()
+  ]
 });
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://dark-band-7a4a.arpituniyal12.workers.dev",
+];
 
 app.use(
   cors({
-    origin: "*",
-    credentials: false,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
@@ -36,7 +45,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-// Models (includes sequelize + syncDB)
+// Models
 const db = require('./models');
 
 // Routes
@@ -45,9 +54,6 @@ const pdfRoutes = require('./routes/pdf');
 const flashcardRoutes = require('./routes/flashcards');
 const formulaRoutes = require("./routes/formulas");
 const paymentRoutes = require("./routes/payment");
-
-
-
 
 // Welcome
 app.get('/', (req, res) => {
@@ -64,7 +70,10 @@ app.get('/api/health', async (req, res) => {
     await db.sequelize.authenticate();
     res.json({ status: 'ok', database: 'connected' });
   } catch (err) {
-    res.status(500).json({ status: 'error', database: 'disconnected' });
+    res.status(500).json({
+      status: 'error',
+      database: 'disconnected'
+    });
   }
 });
 
@@ -74,7 +83,6 @@ app.use('/api/pdf', pdfRoutes);
 app.use('/api/pdf', flashcardRoutes);
 app.use("/api/pdf", formulaRoutes);
 app.use("/api/payment", paymentRoutes);
-
 
 // 404
 app.use((req, res) => {
@@ -97,11 +105,9 @@ const startServer = async () => {
     await db.sequelize.authenticate();
     await db.sequelize.sync();
 
-
-    server.listen(PORT, '0.0.0.0', () => {
-  logger.info(`Server running on port ${PORT}`);
-});
-    
+    app.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
+    });
   } catch (error) {
     logger.error('Failed to start server:', error);
     process.exit(1);
@@ -112,15 +118,15 @@ if (process.env.NODE_ENV !== 'test') {
   startServer();
 }
 
-// Graceful shutdown
+// Error handling
 process.on('unhandledRejection', (err) => {
   logger.error(err);
-  server.close(() => process.exit(1));
+  process.exit(1);
 });
 
 process.on('uncaughtException', (err) => {
   logger.error(err);
-  server.close(() => process.exit(1));
+  process.exit(1);
 });
 
 module.exports = app;
