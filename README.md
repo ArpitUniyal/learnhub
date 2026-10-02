@@ -114,13 +114,13 @@ This keeps requests manageable and allows large study materials to be processed 
 - MySQL
 - JWT Authentication
 - bcryptjs
-- Nodemailer
 - Multer
 - pdf-parse
 - Winston
 - Morgan
 - Axios
 - Razorpay
+- Brevo
 
 ### AI / LLM Layer
 - Google Gemini
@@ -316,7 +316,6 @@ LearnHub provides a listen-to-notes feature using the browser's **Web Speech API
 - Password hashing with `bcryptjs`
 - Temporary password-reset tokens
 - Environment-based API credentials
-- Gmail App Password for SMTP
 - AI API keys kept on the backend
 - No private AI credentials exposed in the frontend
 
@@ -331,7 +330,7 @@ LearnHub provides a listen-to-notes feature using the browser's **Web Speech API
 - Gemini API key
 - Groq API key
 - OpenRouter API key
-- Gmail SMTP/App Password for password-reset emails
+- Brevo API key for password resent mail
 
 ### Backend
 
@@ -434,7 +433,7 @@ GROQ_API_KEY
 OPENROUTER_API_KEY
 JWT_SECRET
 DB_PASSWORD
-SMTP_PASS
+BREVO_API_KEY
 RAZORPAY_KEY_SECRET
 ```
 
